@@ -7,6 +7,9 @@ public class JaccardSimilarity {
         Set<String> intersection = new HashSet<String>(setA);
         intersection.retainAll(setB);
 
-        return (float) intersection.size() / (float) (setA.size() + setB.size() - intersection.size());
+        float numerator = intersection.size();
+        float denominator = (setA.size() + setB.size() - intersection.size());
+
+        return numerator / denominator;
     }
 }
