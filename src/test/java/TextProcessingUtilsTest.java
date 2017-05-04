@@ -30,6 +30,28 @@ public class TextProcessingUtilsTest {
     }
 
     @Test
+    public void shouldGetCorrect5Shingles() throws Exception {
+        String text = "The quick brown fox jumps over the lazy dog";
+        List<String> expectedShingles = asList(
+                "The quick brown fox jumps",
+                "quick brown fox jumps over",
+                "brown fox jumps over the",
+                "fox jumps over the lazy",
+                "jumps over the lazy dog"
+        );
+
+        List<String> shingles = TextProcessingUtils.getKShingle(text, 5);
+
+        assertThat(shingles.size()).isEqualTo(5);
+        assertThat(shingles).isEqualTo(expectedShingles);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptTooLargeKValue() throws Exception {
+        TextProcessingUtils.getKShingle("foo bar", 3);
+    }
+
+    @Test
     public void shouldSplitAtSpace() throws Exception {
         String text = "these are some words";
 
@@ -49,20 +71,4 @@ public class TextProcessingUtilsTest {
         assertThat(words).isEqualTo(asList("these", "are", "some", "words"));
     }
 
-    @Test
-    public void shouldGetCorrect5Shingles() throws Exception {
-        String text = "The quick brown fox jumps over the lazy dog";
-        List<String> expectedShingles = asList(
-                "The quick brown fox jumps",
-                "quick brown fox jumps over",
-                "brown fox jumps over the",
-                "fox jumps over the lazy",
-                "jumps over the lazy dog"
-        );
-
-        List<String> shingles = TextProcessingUtils.getKShingle(text, 5);
-
-        assertThat(shingles.size()).isEqualTo(5);
-        assertThat(shingles).isEqualTo(expectedShingles);
-    }
 }
