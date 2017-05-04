@@ -46,4 +46,25 @@ public class JaccardSimilarityTest {
 
         assertThat(similarity).isEqualTo(0.6f);
     }
+
+    @Test
+    public void shouldIgnoreDuplicatesWithinSameSet() throws Exception {
+        HashSet<String> setA = new HashSet<String>(asList("chair", "chair", "rug", "keyboard"));
+        HashSet<String> setB = new HashSet<String>(asList("chair", "rug", "keyboard", "keyboard"));
+
+        float similarity = JaccardSimilarity.of(setA, setB);
+
+        assertThat(similarity).isEqualTo(1f);
+    }
+
+    @Test
+    public void shouldBeCommutative() throws Exception {
+        HashSet<String> setA = new HashSet<String>(asList("chair", "chair", "rug", "keyboard"));
+        HashSet<String> setB = new HashSet<String>(asList("chair", "rug", "keyboard", "keyboard"));
+
+        float firstAthenB = JaccardSimilarity.of(setA, setB);
+        float firstBthenA= JaccardSimilarity.of(setA, setB);
+
+        assertThat(firstAthenB).isEqualTo(firstBthenA);
+    }
 }
