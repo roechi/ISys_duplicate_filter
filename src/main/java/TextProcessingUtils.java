@@ -7,7 +7,7 @@ import static java.util.Arrays.asList;
 
 public final class TextProcessingUtils {
 
-    public static List<String> getKShingle(String text, int k) {
+    public static List<String> getKShingles(String text, int k) {
         String[] words = (String[]) splitWords(text, " ").toArray();
 
         Preconditions.checkArgument(words.length >= k, "Not enough words for " + k + "-shingles.");

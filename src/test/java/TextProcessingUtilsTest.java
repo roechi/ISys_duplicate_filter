@@ -12,7 +12,7 @@ public class TextProcessingUtilsTest {
     public void shouldGetOneShingle() throws Exception {
         String text = "these are some words";
 
-        Collection<String> shingles = TextProcessingUtils.getKShingle(text, 4);
+        Collection<String> shingles = TextProcessingUtils.getKShingles(text, 4);
 
         assertThat(shingles.size()).isEqualTo(1);
         assertThat(shingles.toArray()[0]).isEqualTo(text);
@@ -22,7 +22,7 @@ public class TextProcessingUtilsTest {
     public void shouldGetTwoShingles() throws Exception {
         String text = "these are some words";
 
-        Collection<String> shingles = TextProcessingUtils.getKShingle(text, 3);
+        Collection<String> shingles = TextProcessingUtils.getKShingles(text, 3);
 
         assertThat(shingles.size()).isEqualTo(2);
         assertThat(shingles.toArray()[0]).isEqualTo("these are some");
@@ -40,7 +40,7 @@ public class TextProcessingUtilsTest {
                 "jumps over the lazy dog"
         );
 
-        List<String> shingles = TextProcessingUtils.getKShingle(text, 5);
+        List<String> shingles = TextProcessingUtils.getKShingles(text, 5);
 
         assertThat(shingles.size()).isEqualTo(5);
         assertThat(shingles).isEqualTo(expectedShingles);
@@ -48,7 +48,7 @@ public class TextProcessingUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotAcceptTooLargeKValue() throws Exception {
-        TextProcessingUtils.getKShingle("foo bar", 3);
+        TextProcessingUtils.getKShingles("foo bar", 3);
     }
 
     @Test
