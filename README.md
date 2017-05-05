@@ -1,4 +1,4 @@
-#Duplicate Detector for News Articles 
+# Duplicate Detector for News Articles 
 [![Build Status](https://travis-ci.org/roechi/ISys_duplicate_filter.svg?branch=master)](https://travis-ci.org/roechi/ISys_duplicate_filter)
 
 ## ToDo
