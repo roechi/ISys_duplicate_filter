@@ -1,3 +1,5 @@
+package isys.duplicatefilter;
+
 import org.junit.Test;
 
 import java.util.Collection;

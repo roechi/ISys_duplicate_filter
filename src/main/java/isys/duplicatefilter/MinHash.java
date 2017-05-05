@@ -1,3 +1,5 @@
+package isys.duplicatefilter;
+
 import java.util.List;
 import java.util.function.BinaryOperator;
 

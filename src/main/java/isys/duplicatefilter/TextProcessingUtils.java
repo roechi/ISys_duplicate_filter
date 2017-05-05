@@ -1,3 +1,5 @@
+package isys.duplicatefilter;
+
 import org.assertj.core.util.Preconditions;
 import org.assertj.core.util.Strings;
 
