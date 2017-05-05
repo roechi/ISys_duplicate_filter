@@ -4,7 +4,7 @@
 ## ToDo
 - build REST client to fetch article collection
 - add persistence layer (MongoDB ?)
-- implement REST API w/ pagination to serve filtered data set
+- implement REST API w/ pagination to serve filtered data set (Spring Boot)
 - implement MinHash filter
 - implement LHS filter
 
