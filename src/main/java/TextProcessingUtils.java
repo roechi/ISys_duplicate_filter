@@ -1,7 +1,9 @@
 import org.assertj.core.util.Preconditions;
 import org.assertj.core.util.Strings;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
