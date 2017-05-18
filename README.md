@@ -2,11 +2,12 @@
 [![Build Status](https://travis-ci.org/roechi/ISys_duplicate_filter.svg?branch=master)](https://travis-ci.org/roechi/ISys_duplicate_filter)
 
 ## ToDo
-- build REST client to fetch article collection
-- add persistence layer (MongoDB ?)
-- implement REST API w/ pagination to serve filtered data set (Spring Boot)
-- implement MinHash filter
-- implement LHS filter
+- [x] build REST client to fetch article collection
+- [x] add persistence layer (MongoDB ?)
+- [ ] init articles to mongo
+- [ ] implement REST API w/ pagination to serve filtered data set (Spring Boot)
+- [ ] implement MinHash filter
+- [ ] implement LHS filter
 
 ## Open Questions
 - runtime comparison for MinHash, LHS and maybe even simple Jaccard similarity
