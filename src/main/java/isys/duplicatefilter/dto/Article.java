@@ -3,13 +3,18 @@ package isys.duplicatefilter.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 @Data
 @Accessors(chain = true)
+@Document
 public class Article {
 
+    @Id
+    private String key;
     @JsonProperty("Referenzmeldungen")
     private List<String> referenceReports;
     @JsonProperty("Ereigniszeitpunkt")
