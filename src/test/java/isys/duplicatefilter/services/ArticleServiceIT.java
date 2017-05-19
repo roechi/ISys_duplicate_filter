@@ -1,9 +1,6 @@
 package isys.duplicatefilter.services;
 
-import isys.duplicatefilter.DuplicateFilterApp;
-import isys.duplicatefilter.config.ApplicationConfig;
 import isys.duplicatefilter.dto.Article;
-import isys.duplicatefilter.repositories.IArticleRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DuplicateFilterApp.class, ApplicationConfig.class, ArticleService.class, IArticleRepository.class},
-        properties = {"db.uri=mongodb://localhost:27017/isys"})
+@SpringBootTest
 public class ArticleServiceIT {
 
     @Autowired
