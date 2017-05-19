@@ -3,7 +3,6 @@ package isys.duplicatefilter.services;
 import isys.duplicatefilter.dto.Article;
 import isys.duplicatefilter.repositories.IArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +12,6 @@ public class ArticleService {
 
     @Autowired
     private IArticleRepository articleRepository;
-    @Autowired
-    private MongoOperations mongoOperations;
 
     @Autowired
     public ArticleService(IArticleRepository articleRepository) {
