@@ -1,0 +1,34 @@
+package isys.duplicatefilter.config;
+
+import isys.duplicatefilter.controllers.ArticleController;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@RunWith(SpringRunner.class)
+public class WebConfigurationIT {
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setUp() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(new ArticleController()).build();
+    }
+
+    @Test
+    public void shouldEncodeWithUTF8() throws Exception {
+        mockMvc.perform(get("/duplicates").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().encoding("UTF-8"));
+    }
+}
