@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import isys.duplicatefilter.dto.Article;
 import isys.duplicatefilter.dto.ArticleList;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -23,7 +24,7 @@ public class ArticleController {
     @ResponseBody
     Collection<Article> deliverFakeData() throws IOException, URISyntaxException {
 
-        byte[] file = Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("fakeData/example.json").toURI()));
+        byte[] file = Files.readAllBytes(Paths.get(ResourceUtils.getFile("fakeData/example.json").toURI()));
         final ObjectMapper mapper = new ObjectMapper();
         ArticleList articlesList = mapper.readValue(file, ArticleList.class);
         Map<String, Article> articleMap = articlesList.stream().collect(Collectors.toMap(Article::getId, a -> a));
