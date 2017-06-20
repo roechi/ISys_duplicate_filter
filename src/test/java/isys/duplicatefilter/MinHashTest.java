@@ -108,4 +108,38 @@ public class MinHashTest {
 
     }
 
+    @Test
+    public void testLocalSensityHashing() throws IOException, URISyntaxException {
+        byte[] file = Files.readAllBytes(Paths.get(MinHash.class.getClassLoader().getResource(
+                "fakeData/example.json").toURI()));
+        final ObjectMapper mapper = new ObjectMapper();
+        ArticleList articlesList = mapper.readValue(file, ArticleList.class);
+        Random r = new Random(199);
+        Map<String, List<String>> shinglesOfArticles = new HashMap<>();
+        Map<String, List<Integer>> minHashOfArticles = new HashMap<>();
+
+        articlesList.forEach(article -> {
+            String content = article.getContent();
+            if (content == null) {
+                content = article.getTitle();
+            }
+            shinglesOfArticles.put(article.getId(), TextProcessingUtils.getKShingles(content, 3));
+        });
+
+
+        System.out.println("==================Shingles generated");
+
+
+        MinHash minHash = new MinHash(199);
+
+        shinglesOfArticles.forEach((key, shingles) -> {
+            minHashOfArticles.put(key, minHash.hash(shingles));
+        });
+        System.out.println("==================hashes generated");
+
+        LocalSensitiveHashing sensitiveHashing = new LocalSensitiveHashing(67, new LinkedHashMap<>(minHashOfArticles));
+        Set<String> keys = sensitiveHashing.compareBands();
+        System.out.println(keys.size() + " articles to compare after LSH");
+    }
+
 }
