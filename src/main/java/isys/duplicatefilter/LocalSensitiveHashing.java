@@ -13,14 +13,14 @@ public class LocalSensitiveHashing {
 
     private Map<IntegerArrayKey, Set<String>> buckets = new HashMap<>();
 
-    public LocalSensitiveHashing(int numberOfBands, LinkedHashMap<String, List<Integer>> matrix) {
+    public LocalSensitiveHashing(int numberOfBands, int bucketSize, LinkedHashMap<String, List<Integer>> matrix) {
         keys = new ArrayList<>(matrix.keySet());
         for (int i = 0; i < numberOfBands; i++) {
             List<Integer[]> bands = new ArrayList<>();
             for (List<Integer> hashes : matrix.values()) {
-                Integer[] band = new Integer[3];
+                Integer[] band = new Integer[bucketSize];
                 int bandIndex = 0;
-                for (int index = i * 3; index < i * 3 + 3 && index < hashes.size(); index++, bandIndex++) {
+                for (int index = i * bucketSize; index < i * bucketSize + bucketSize && index < hashes.size(); index++, bandIndex++) {
                     Integer hash = hashes.get(index);
                     band[bandIndex] = hash;
                 }

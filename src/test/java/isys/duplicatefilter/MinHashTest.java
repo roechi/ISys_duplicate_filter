@@ -123,7 +123,6 @@ public class MinHashTest {
                 "fakeData/example.json").toURI()));
         final ObjectMapper mapper = new ObjectMapper();
         ArticleList articlesList = mapper.readValue(file, ArticleList.class);
-        Random r = new Random(199);
         Map<String, List<String>> shinglesOfArticles = new HashMap<>();
         Map<String, List<Integer>> minHashOfArticles = new HashMap<>();
 
@@ -139,14 +138,14 @@ public class MinHashTest {
         System.out.println("==================Shingles generated");
 
 
-        MinHash minHash = new MinHash(199);
+        MinHash minHash = new MinHash(198);
 
         shinglesOfArticles.forEach((key, shingles) -> {
             minHashOfArticles.put(key, minHash.hash(shingles));
         });
         System.out.println("==================hashes generated");
 
-        LocalSensitiveHashing sensitiveHashing = new LocalSensitiveHashing(67, new LinkedHashMap<>(minHashOfArticles));
+        LocalSensitiveHashing sensitiveHashing = new LocalSensitiveHashing(66, 3, new LinkedHashMap<>(minHashOfArticles));
         Set<String> keys = sensitiveHashing.compareBands();
         System.out.println(keys.size() + " articles to compare after LSH");
 
@@ -155,6 +154,7 @@ public class MinHashTest {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         int doublesCount = 0;
+        int count = 0;
         int notSameJournal = 0;
         List<Map.Entry<String, List<Integer>>> minHashes = Lists.newArrayList(filteredMinHashes.entrySet());
 
@@ -162,7 +162,7 @@ public class MinHashTest {
             for (int j = i + 1; j < filteredMinHashes.size(); j++) {
                 Map.Entry<String, List<Integer>> iHash = minHashes.get(i);
                 Map.Entry<String, List<Integer>> jHash = minHashes.get(j);
-
+                count++;
                 float similiarity = JaccardSimilarity.ofInt(iHash.getValue(), jHash.getValue());
                 if (similiarity >= 0.8) {
                     Optional<Article> first = articlesList.stream().filter(art -> art.getId().equals(iHash.getKey())).findFirst();
@@ -178,6 +178,7 @@ public class MinHashTest {
         System.out.println("==================Jaccard generated");
         System.out.println(notSameJournal + " not same journal");
         System.out.println(doublesCount + " duplicates");
+        System.out.println(count + " calculations");
 
     }
 
