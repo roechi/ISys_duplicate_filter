@@ -22,8 +22,8 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
-    public Article fetch(String key) {
-        return articleRepository.findByKey(key);
+    public Article fetch(String id) {
+        return articleRepository.findById(id);
     }
 
     public List<Article> findAll() {

@@ -5,5 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface IArticleRepository extends MongoRepository<Article, String> {
 
-    Article findByKey(String key);
+    Article findById(String id);
+
 }

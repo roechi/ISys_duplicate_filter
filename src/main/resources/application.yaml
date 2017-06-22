@@ -1,5 +1,10 @@
-db:
-  host: 127.0.0.1
-  port: 27017
-  name: isys
-  uri: ${MONGODB_URI:none}
+article:
+  repository:
+    host: "http://cmts3.f4.htw-berlin.de:8000"
+
+spring:
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: isys

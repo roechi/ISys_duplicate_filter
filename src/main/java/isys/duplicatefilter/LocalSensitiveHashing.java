@@ -5,16 +5,18 @@ import org.assertj.core.util.Sets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 public class LocalSensitiveHashing {
 
-    private List<String> keys;
+    private List<String> ids;
 
     private List<List<Integer[]>> minHashBands = new ArrayList<>();
 
     private Map<IntegerArrayKey, Set<String>> buckets = new HashMap<>();
 
     public LocalSensitiveHashing(int numberOfBands, int bucketSize, LinkedHashMap<String, List<Integer>> matrix) {
-        keys = new ArrayList<>(matrix.keySet());
+        ids = new ArrayList<>(matrix.keySet());
         for (int i = 0; i < numberOfBands; i++) {
             List<Integer[]> bands = new ArrayList<>();
             for (List<Integer> hashes : matrix.values()) {
@@ -31,17 +33,16 @@ public class LocalSensitiveHashing {
     }
 
 
-    public Set<String> compareBands() {
+    public ArrayList<String> compareBands() {
         Set<String> keysToCompare;
         minHashBands.forEach(hashBand -> {
             for (int i = 0; i < hashBand.size(); i++) {
-                IntegerArrayKey hashes = new IntegerArrayKey(hashBand.get(i));
-                Set<String> strings = buckets.get(hashes);
-                if (strings != null) {
-                    strings.add(keys.get(i));
+                IntegerArrayKey bandNumber = new IntegerArrayKey(hashBand.get(i));
+                Set<String> idsInBucket = buckets.get(bandNumber);
+                if (idsInBucket == null) {
+                    buckets.put(bandNumber, Sets.newLinkedHashSet(ids.get(i)));
                 } else {
-                    buckets.put(hashes, Sets.newLinkedHashSet(keys.get(i)));
-
+                    idsInBucket.add(ids.get(i));
                 }
             }
         });
@@ -49,7 +50,7 @@ public class LocalSensitiveHashing {
                 .filter(set -> set.size() > 1)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        return keysToCompare;
+        return newArrayList(keysToCompare);
     }
 
     class IntegerArrayKey {

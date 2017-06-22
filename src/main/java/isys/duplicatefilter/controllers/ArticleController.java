@@ -1,29 +1,15 @@
 package isys.duplicatefilter.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import isys.duplicatefilter.dto.Article;
-import isys.duplicatefilter.dto.ArticleList;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class ArticleController {
 
+/*
     @RequestMapping(path = "/duplicates")
     public
     @ResponseBody
     Collection<Article> deliverFakeData() throws IOException, URISyntaxException {
-
         byte[] file = Files.readAllBytes(Paths.get(ResourceUtils.getFile("fakeData/example.json").toURI()));
         final ObjectMapper mapper = new ObjectMapper();
         ArticleList articlesList = mapper.readValue(file, ArticleList.class);
@@ -54,7 +40,7 @@ public class ArticleController {
             }
         });
 
-        return articleMap.values();
     }
+        return articleMap.values();*/
 
 }
