@@ -2,6 +2,7 @@ package isys.duplicatefilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import isys.duplicatefilter.dto.Article;
 import isys.duplicatefilter.dto.ArticleList;
 import org.junit.Test;
 
@@ -10,6 +11,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,6 +91,7 @@ public class MinHashTest {
         List<Map.Entry<String, List<Integer>>> minHashes = Lists.newArrayList(minHashOfArticles.entrySet());
 
         int doublesCount = 0;
+        int notSameJournal = 0;
 
         for (int i = 0; i < minHashOfArticles.size(); i++) {
             for (int j = i + 1; j < minHashOfArticles.size(); j++) {
@@ -96,13 +99,19 @@ public class MinHashTest {
                 Map.Entry<String, List<Integer>> jHash = minHashes.get(j);
 
                 float similiarity = JaccardSimilarity.ofInt(iHash.getValue(), jHash.getValue());
-                if (similiarity > 0.5) {
-                    System.out.println(iHash.getKey() + " is similar to " + jHash.getKey() + " with a similarity of " + similiarity);
+                if (similiarity >= 0.1) {
+                    Optional<Article> first = articlesList.stream().filter(art -> art.getId().equals(iHash.getKey())).findFirst();
+                    Optional<Article> second = articlesList.stream().filter(art -> art.getId().equals(jHash.getKey())).findFirst();
+//                    System.out.println(iHash.getKey() + " is similar to " + jHash.getKey() + " with a similarity of " + similiarity);
+                    if (!first.get().getJournal().equals(second.get().getJournal())) {
+                        notSameJournal++;
+                    }
                     doublesCount++;
                 }
             }
         }
         System.out.println("==================Jaccard generated");
+        System.out.println(notSameJournal + " not same journal");
         System.out.println(doublesCount + " duplicates");
 
 
@@ -140,6 +149,36 @@ public class MinHashTest {
         LocalSensitiveHashing sensitiveHashing = new LocalSensitiveHashing(67, new LinkedHashMap<>(minHashOfArticles));
         Set<String> keys = sensitiveHashing.compareBands();
         System.out.println(keys.size() + " articles to compare after LSH");
+
+        Map<String, List<Integer>> filteredMinHashes = minHashOfArticles.entrySet().stream()
+                .filter(entry -> keys.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        int doublesCount = 0;
+        int notSameJournal = 0;
+        List<Map.Entry<String, List<Integer>>> minHashes = Lists.newArrayList(filteredMinHashes.entrySet());
+
+        for (int i = 0; i < filteredMinHashes.size(); i++) {
+            for (int j = i + 1; j < filteredMinHashes.size(); j++) {
+                Map.Entry<String, List<Integer>> iHash = minHashes.get(i);
+                Map.Entry<String, List<Integer>> jHash = minHashes.get(j);
+
+                float similiarity = JaccardSimilarity.ofInt(iHash.getValue(), jHash.getValue());
+                if (similiarity >= 0.8) {
+                    Optional<Article> first = articlesList.stream().filter(art -> art.getId().equals(iHash.getKey())).findFirst();
+                    Optional<Article> second = articlesList.stream().filter(art -> art.getId().equals(jHash.getKey())).findFirst();
+//                    System.out.println(iHash.getKey() + " is similar to " + jHash.getKey() + " with a similarity of " + similiarity);
+                    if (!first.get().getJournal().equals(second.get().getJournal())) {
+                        notSameJournal++;
+                    }
+                    doublesCount++;
+                }
+            }
+        }
+        System.out.println("==================Jaccard generated");
+        System.out.println(notSameJournal + " not same journal");
+        System.out.println(doublesCount + " duplicates");
+
     }
 
 }
