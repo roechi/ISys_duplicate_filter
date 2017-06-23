@@ -98,7 +98,7 @@ public class UpdateService {
                         if (similarity >= SIMILARITY_THRESHOLD) {
                             FilteredArticle articleWithDuplicate = articleMapComplete.get(id);
                             articleWithDuplicate.getDuplicateIds().add(otherId);
-                            FilteredArticle otherArticleWithDuplicate = articleMapComplete.get(id);
+                            FilteredArticle otherArticleWithDuplicate = articleMapComplete.get(otherId);
                             otherArticleWithDuplicate.getDuplicateIds().add(id);
                             duplicates++;
                             if (!articleWithDuplicate.getJournal().equals(articleMapComplete.get(otherId).getJournal())) {
