@@ -8,3 +8,13 @@ spring:
       host: 127.0.0.1
       port: 27017
       database: isys
+
+---
+spring:
+  profiles: heroku
+
+spring:
+  data:
+    mongodb:
+      host:
+      uri: uri: ${MONGODB_URI:none}
