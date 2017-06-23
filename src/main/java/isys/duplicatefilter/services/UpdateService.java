@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
@@ -18,7 +15,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class UpdateService {
 
-    private final static double SIMILARITY_THRESHOLD = 0.7;
+    private final static double SIMILARITY_THRESHOLD = 1.0;
 
     private final DataClient client;
     private final ArticleService service;
@@ -54,9 +51,9 @@ public class UpdateService {
                 .stream()
                 .filter(article -> !article.getContent().isEmpty())
                 .forEach(article -> {
-                                articleMap
+                            articleMap
                                     .put(article.getId(), TextProcessingUtils.getKShingles(article.getContent(), 3));
-                                articleMapComplete.put(article.getId(), article);
+                            articleMapComplete.put(article.getId(), article);
                         }
                 );
 
@@ -70,27 +67,54 @@ public class UpdateService {
         log.info("Hashed articles.");
 
         LocalSensitiveHashing localSensitiveHashing = new LocalSensitiveHashing(66, 3, minHashMap);
-        ArrayList<String> ids = localSensitiveHashing.compareBands();
+        List<ArrayList<String>> buckets = localSensitiveHashing.compareBands();
 
-        log.info("LSH done. Size: " + ids.size());
-
+        int bucketSize = buckets.size();
+        Set<String> strings = new HashSet<>();
+        buckets.forEach(strings::addAll);
+        int articleToCompare = strings.size();
+        log.info("LSH done. Buckets: " + bucketSize + " Article to compare: " + articleToCompare);
         int duplicates = 0;
-        for (int i = 0; i < ids.size(); i++) {
-            String id = ids.get(i);
-            List<Integer> hashes = minHashMap.get(id);
-            for (int j = i + 1; j < ids.size(); j++) {
-                String otherId = ids.get(j);
-                List<Integer> otherHashes = minHashMap.get(otherId);
-                float similarity = JaccardSimilarity.ofInt(hashes, otherHashes);
-                if (similarity >= SIMILARITY_THRESHOLD) {
-                    duplicates++;
-                    if (!articleMapComplete.get(id).getJournal().equals(articleMapComplete.get(otherId).getJournal())) {
-                        log.info(MessageFormat.format("Duplicate for articles {0} and {1}.", id, otherId));
+        int compares = 0;
+        int completedBuckets = 0;
+        double oldPercentage = 0;
+        StringBuilder sb = new StringBuilder();
+        Set<String> alreadyCompared = new HashSet<>();
+        for (ArrayList<String> keySet : buckets) {
+            for (int i = 0; i < keySet.size(); i++) {
+                String id = keySet.get(i);
+                List<Integer> hashes = minHashMap.get(id);
+                for (int j = i + 1; j < keySet.size(); j++) {
+                    String otherId = keySet.get(j);
+                    List<Integer> otherHashes = minHashMap.get(otherId);
+                    sb.append(id);
+                    sb.append(otherId);
+                    if (!alreadyCompared.contains(sb.toString())) {
+                        compares++;
+                        float similarity = JaccardSimilarity.ofInt(hashes, otherHashes);
+                        if (similarity >= SIMILARITY_THRESHOLD) {
+                            duplicates++;
+                            if (!articleMapComplete.get(id).getJournal().equals(articleMapComplete.get(otherId).getJournal())) {
+                                log.info(MessageFormat.format("Duplicate for articles {0} and {1}.", id, otherId));
+                            }
+                        }
+                        alreadyCompared.add(sb.toString());
                     }
+                    sb.setLength(0);
                 }
             }
+            completedBuckets++;
+
+            double percentage = ((double) completedBuckets) / ((double) bucketSize) * 100;
+
+            if (percentage - oldPercentage > 5) {
+                log.info(MessageFormat.format("Completed {0} out of {1} buckets. {2}%", completedBuckets, bucketSize, percentage));
+                oldPercentage = percentage;
+            }
         }
-        log.info(MessageFormat.format("Found {0} duplicates.", duplicates));
+
+
+        log.info(MessageFormat.format("Found {0} duplicates in {1} comparisons.", duplicates, compares));
     }
 
 
