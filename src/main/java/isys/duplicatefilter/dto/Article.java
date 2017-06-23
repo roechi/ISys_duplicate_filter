@@ -1,6 +1,5 @@
 package isys.duplicatefilter.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
@@ -8,9 +7,7 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Accessors(chain = true)
@@ -19,34 +16,30 @@ import java.util.Set;
 public class Article {
 
     @Id
-    @JsonIgnore
-    private String key;
-    @JsonProperty("ID")
+    @JsonProperty("id")
     private String id;
-    @JsonProperty("DuplicateIDs")
-    private Set<String> duplicateIds = new HashSet<>();
-    @JsonProperty("Referenzmeldungen")
+    @JsonProperty("referenzmeldungen")
     private List<String> referenceReports;
-    @JsonProperty("Ereigniszeitpunkt")
+    @JsonProperty("ereigniszeitpunkt")
     private String date;
-    @JsonProperty("Ortsteil")
+    @JsonProperty("ortsteil")
     private String district;
-    @JsonProperty("Kategorie")
+    @JsonProperty("kategorie")
     private String category;
-    @JsonProperty("Zeitung")
+    @JsonProperty("zeitung")
     private String journal;
     @JsonProperty("url")
     private String url;
-    @JsonProperty("Bezirk")
+    @JsonProperty("bezirk")
     private String precinct;
-    @JsonProperty("Adresse")
+    @JsonProperty("adresse")
     private String address;
-    @JsonProperty("Einsatzkr\u00e4fte")
+    @JsonProperty("einsatzkraefte")
     private Object reliefForces;
-    @JsonProperty("Meldungszeitpunkt")
+    @JsonProperty("meldungszeitpunkt")
     private String messageTimestamp;
-    @JsonProperty("Titel")
+    @JsonProperty("titel")
     private String title;
-    @JsonProperty("Inhalt")
+    @JsonProperty("inhalt")
     private String content;
 }

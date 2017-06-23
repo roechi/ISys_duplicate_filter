@@ -1,60 +1,69 @@
 package isys.duplicatefilter.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import isys.duplicatefilter.dto.Article;
-import isys.duplicatefilter.dto.ArticleList;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import isys.duplicatefilter.exceptions.BadRequestException;
+import isys.duplicatefilter.services.ArticleService;
+import isys.duplicatefilter.services.FilteredArticleService;
+import isys.duplicatefilter.services.RawArticleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.text.MessageFormat;
+import java.util.Optional;
 
-@Controller
+import static com.google.common.collect.Lists.newArrayList;
+
+@RestController
+@RequiredArgsConstructor
 public class ArticleController {
 
-    @RequestMapping(path = "/duplicates")
-    public
-    @ResponseBody
-    Collection<Article> deliverFakeData() throws IOException, URISyntaxException {
+    private final FilteredArticleService filteredArticleService;
+    private final RawArticleService rawArticleService;
 
-        byte[] file = Files.readAllBytes(Paths.get(ResourceUtils.getFile("fakeData/example.json").toURI()));
-        final ObjectMapper mapper = new ObjectMapper();
-        ArticleList articlesList = mapper.readValue(file, ArticleList.class);
-        Map<String, Article> articleMap = articlesList.stream().collect(Collectors.toMap(Article::getId, a -> a));
-        articleMap.entrySet().forEach((Map.Entry<String, Article> entry) -> {
-            Article article = entry.getValue();
-            if (articleMap.containsKey(article.getId())) {
-                article = articleMap.get(article.getId());
-            }
-            int outOfTen = (int) (Math.random() * (10 - 1)) + 1;
-            if (outOfTen <= 1) {
-                String duplicateKey = String.valueOf(articleMap.keySet().toArray()[(int) (Math.random() * (articleMap.size() - 1)) + 1]);
-                Article duplicate = articleMap.get(duplicateKey);
-                if (!duplicate.getId().equals(article.getId())) {
-                    duplicate = articleMap.get(duplicate.getId());
-
-                    for (String id : article.getDuplicateIds()) {
-                        articleMap.get(id).getDuplicateIds().add(duplicate.getId());
-                        duplicate.getDuplicateIds().add(id);
-                    }
-                    article.getDuplicateIds().add(duplicate.getId());
-                    for (String id : duplicate.getDuplicateIds()) {
-                        articleMap.get(id).getDuplicateIds().add(article.getId());
-                        article.getDuplicateIds().add(id);
-                    }
-                    duplicate.getDuplicateIds().add(article.getId());
-                }
-            }
-        });
-
-        return articleMap.values();
+    @GetMapping("/articles")
+    public ResponseEntity getArticles(@RequestParam(required = false) Integer page) {
+        return getResponseEntity(page, rawArticleService);
     }
 
+    @GetMapping("/duplicates")
+    public ModelAndView getDuplicates() {
+        return new ModelAndView("redirect:/articles?page=1");
+    }
+
+    @GetMapping(path = "/filteredArticle")
+    public ResponseEntity getFilteredArticles(@RequestParam Integer page) throws IOException, URISyntaxException {
+        return getResponseEntity(page, filteredArticleService);
+    }
+
+    private ResponseEntity getResponseEntity(@RequestParam Integer page, ArticleService<?> service) {
+        return Optional.ofNullable(page)
+                .map(pageNumber -> {
+                    Page<? extends Article> all = getPage(pageNumber, service);
+                    return new ResponseEntity<>(newArrayList(all), HttpStatus.OK);
+                }).orElseThrow(() -> {
+                    Page<? extends Article> defaultPage = getPage(1, service);
+                    String message = MessageFormat.format(
+                            "There are {0} pages, choose one. {1}",
+                            defaultPage.getTotalPages(),
+                            "Example: GET /articles?page=3"
+                    );
+                    return new BadRequestException(message);
+                });
+    }
+
+
+    private Page<? extends Article> getPage(Integer pageNumber, ArticleService repository) {
+        Pageable pageable = new PageRequest(pageNumber, 100);
+        return repository.findAll(pageable);
+    }
 }

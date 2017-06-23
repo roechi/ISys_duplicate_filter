@@ -49,5 +49,4 @@ public class MinHashTest {
     public void shouldReturnZeroForEmptyListWithSeed() throws Exception {
         assertThat(MinHash.of(new LinkedList<>(), 31472891)).isEqualTo(0);
     }
-
 }

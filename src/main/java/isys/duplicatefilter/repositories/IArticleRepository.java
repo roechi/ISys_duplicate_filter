@@ -3,7 +3,8 @@ package isys.duplicatefilter.repositories;
 import isys.duplicatefilter.dto.Article;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IArticleRepository extends MongoRepository<Article, String> {
+public interface IArticleRepository<T extends Article> extends MongoRepository<T, String> {
 
-    Article findByKey(String key);
+    T findById(String id);
+
 }

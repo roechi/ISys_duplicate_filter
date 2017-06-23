@@ -14,7 +14,7 @@ public final class TextProcessingUtils {
     public static List<String> getKShingles(String text, int k) {
         String[] words = (String[]) splitWords(text, " ").toArray();
 
-        Preconditions.checkArgument(words.length >= k, "Not enough words for " + k + "-shingles.");
+        Preconditions.checkArgument(words.length >= k, "Not enough words for " + k + "-shingles. Content: " + text);
 
         int numberOfShingles = words.length - k + 1;
         LinkedList<String> shingles = new LinkedList<String>();
