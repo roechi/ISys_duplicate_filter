@@ -2,6 +2,7 @@ package isys.duplicatefilter.services;
 
 import isys.duplicatefilter.*;
 import isys.duplicatefilter.dto.Article;
+import isys.duplicatefilter.dto.FilteredArticle;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ public class UpdateService {
 
     private final DataClient client;
     private final RawArticleService rawArticleService;
+    private final FilteredArticleService filteredArticleService;
 
     @Scheduled(fixedDelay = 1000 * 60 * 60)
     public void updateArticles() {
@@ -41,12 +43,11 @@ public class UpdateService {
         filter();
     }
 
-
     private void filter() {
         log.info("Filtering.");
         List<Article> allArticles = rawArticleService.findAll();
 
-        HashMap<String, Article> articleMapComplete = new HashMap<>();
+        HashMap<String, FilteredArticle> articleMapComplete = new HashMap<>();
         HashMap<String, List<String>> articleMap = new HashMap<>();
 
         allArticles
@@ -55,7 +56,7 @@ public class UpdateService {
                 .forEach(article -> {
                             articleMap
                                     .put(article.getId(), TextProcessingUtils.getKShingles(article.getContent(), 3));
-                            articleMapComplete.put(article.getId(), article);
+                            articleMapComplete.put(article.getId(), toFilteredArticle(article));
                         }
                 );
 
@@ -95,10 +96,15 @@ public class UpdateService {
                         compares++;
                         float similarity = JaccardSimilarity.ofInt(hashes, otherHashes);
                         if (similarity >= SIMILARITY_THRESHOLD) {
+                            FilteredArticle articleWithDuplicate = articleMapComplete.get(id);
+                            articleWithDuplicate.getDuplicateIds().add(otherId);
+                            FilteredArticle otherArticleWithDuplicate = articleMapComplete.get(id);
+                            otherArticleWithDuplicate.getDuplicateIds().add(id);
                             duplicates++;
-                            if (!articleMapComplete.get(id).getJournal().equals(articleMapComplete.get(otherId).getJournal())) {
+                            if (!articleWithDuplicate.getJournal().equals(articleMapComplete.get(otherId).getJournal())) {
                                 log.info(MessageFormat.format("Duplicate for articles {0} and {1}.", id, otherId));
                             }
+
                         }
                         alreadyCompared.add(sb.toString());
                     }
@@ -114,9 +120,27 @@ public class UpdateService {
                 oldPercentage = percentage;
             }
         }
-
-
         log.info(MessageFormat.format("Found {0} duplicates in {1} comparisons.", duplicates, compares));
+        log.info("Saving filtered articles...");
+        articleMapComplete.values().forEach(filteredArticleService::save);
+        log.info("Saved filtered articles.");
+    }
+
+    private static FilteredArticle toFilteredArticle(Article article) {
+        return (FilteredArticle) new FilteredArticle()
+                .setAddress(article.getAddress())
+                .setCategory(article.getCategory())
+                .setContent(article.getContent())
+                .setDate(article.getDate())
+                .setDistrict(article.getDistrict())
+                .setId(article.getId())
+                .setJournal(article.getJournal())
+                .setMessageTimestamp(article.getMessageTimestamp())
+                .setPrecinct(article.getPrecinct())
+                .setReferenceReports(article.getReferenceReports())
+                .setReliefForces(article.getReliefForces())
+                .setTitle(article.getTitle())
+                .setUrl(article.getUrl());
     }
 
 }
