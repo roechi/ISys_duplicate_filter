@@ -146,7 +146,7 @@ public class MinHashTest {
         System.out.println("==================hashes generated");
 
         LocalSensitiveHashing sensitiveHashing = new LocalSensitiveHashing(66, 3, new LinkedHashMap<>(minHashOfArticles));
-        List<String> keys = sensitiveHashing.compareBands();
+        List<ArrayList<String>> keys = sensitiveHashing.compareBands();
         System.out.println(keys.size() + " articles to compare after LSH");
 
         Map<String, List<Integer>> filteredMinHashes = minHashOfArticles.entrySet().stream()

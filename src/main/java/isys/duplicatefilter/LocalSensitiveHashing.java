@@ -1,11 +1,10 @@
 package isys.duplicatefilter;
 
+import com.google.common.collect.Lists;
 import org.assertj.core.util.Sets;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 public class LocalSensitiveHashing {
 
@@ -33,7 +32,7 @@ public class LocalSensitiveHashing {
     }
 
 
-    public ArrayList<String> compareBands() {
+    public List<ArrayList<String>> compareBands() {
         Set<String> keysToCompare;
         minHashBands.forEach(hashBand -> {
             for (int i = 0; i < hashBand.size(); i++) {
@@ -46,11 +45,14 @@ public class LocalSensitiveHashing {
                 }
             }
         });
-        keysToCompare = buckets.values().stream()
+        return buckets.values().stream()
                 .filter(set -> set.size() > 1)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-        return newArrayList(keysToCompare);
+                .map(Lists::newArrayList)
+                .map(list -> {
+                    list.sort(Comparator.naturalOrder());
+                    return list;
+                })
+                .collect(Collectors.toList());
     }
 
     class IntegerArrayKey {
