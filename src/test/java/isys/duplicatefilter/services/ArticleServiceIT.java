@@ -1,5 +1,7 @@
 package isys.duplicatefilter.services;
 
+import isys.duplicatefilter.DuplicateFilterApp;
+import isys.duplicatefilter.config.WebConfiguration;
 import isys.duplicatefilter.dto.Article;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +14,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {DuplicateFilterApp.class, WebConfiguration.class})
 public class ArticleServiceIT {
 
     @Autowired
-    ArticleService articleService;
+    private ArticleService articleService;
 
     @Test
     public void testFetchArticle() {

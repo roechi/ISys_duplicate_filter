@@ -1,9 +1,13 @@
 package isys.duplicatefilter.config;
 
+import isys.duplicatefilter.DuplicateFilterApp;
 import isys.duplicatefilter.controllers.ArticleController;
+import isys.duplicatefilter.repositories.IArticleRepository;
+import isys.duplicatefilter.repositories.IFilteredArticleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -14,20 +18,33 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = {DuplicateFilterApp.class, WebConfiguration.class})
 @RunWith(SpringRunner.class)
 public class WebConfigurationIT {
 
     private MockMvc mockMvc;
 
+    @Autowired
+    private IArticleRepository articleRepository;
+
+
+    @Autowired
+    private IFilteredArticleRepository filteredArticleRepository;
+
     @Before
     public void setUp() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(new ArticleController()).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new ArticleController(filteredArticleRepository, articleRepository)).build();
+    }
+
+    @Test
+    public void shouldRedirect() throws Exception {
+        mockMvc.perform(get("/duplicates").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test
     public void shouldEncodeWithUTF8() throws Exception {
-        mockMvc.perform(get("/duplicates").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/articles?page=1").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().encoding("UTF-8"));
     }

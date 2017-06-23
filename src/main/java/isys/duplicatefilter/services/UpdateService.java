@@ -4,7 +4,6 @@ import isys.duplicatefilter.*;
 import isys.duplicatefilter.dto.Article;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -43,7 +42,7 @@ public class UpdateService {
         log.info("Articles fetched and saved.");
     }
 
-    @Scheduled(fixedDelay = 1000 * 60 * 60)
+    //@Scheduled(fixedDelay = 1000 * 60 * 60)
     private void filter() {
         log.info("Filtering.");
         List<Article> allArticles = service.findAll();

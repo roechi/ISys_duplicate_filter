@@ -1,5 +1,6 @@
 package isys.duplicatefilter.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 
+@Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
