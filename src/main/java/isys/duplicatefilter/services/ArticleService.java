@@ -2,31 +2,32 @@ package isys.duplicatefilter.services;
 
 import isys.duplicatefilter.dto.Article;
 import isys.duplicatefilter.repositories.IArticleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-@Service
-public class ArticleService {
+public abstract class ArticleService<T extends Article> {
 
-    @Autowired
-    private IArticleRepository articleRepository;
+    private final IArticleRepository<T> articleRepository;
 
-    @Autowired
-    public ArticleService(IArticleRepository articleRepository) {
+    public ArticleService(IArticleRepository<T> articleRepository) {
         this.articleRepository = articleRepository;
     }
 
-    public void save(Article article) {
+    public void save(T article) {
         articleRepository.save(article);
     }
 
-    public Article fetch(String id) {
+    public T fetch(String id) {
         return articleRepository.findById(id);
     }
 
-    public List<Article> findAll() {
+    public List<T> findAll() {
         return articleRepository.findAll();
+    }
+
+    public Page<T> findAll(Pageable pageable) {
+        return articleRepository.findAll(pageable);
     }
 }

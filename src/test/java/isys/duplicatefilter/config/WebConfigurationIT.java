@@ -2,8 +2,8 @@ package isys.duplicatefilter.config;
 
 import isys.duplicatefilter.DuplicateFilterApp;
 import isys.duplicatefilter.controllers.ArticleController;
-import isys.duplicatefilter.repositories.IArticleRepository;
-import isys.duplicatefilter.repositories.IFilteredArticleRepository;
+import isys.duplicatefilter.services.FilteredArticleService;
+import isys.duplicatefilter.services.RawArticleService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,15 +25,15 @@ public class WebConfigurationIT {
     private MockMvc mockMvc;
 
     @Autowired
-    private IArticleRepository articleRepository;
+    private RawArticleService rawArticleService;
 
 
     @Autowired
-    private IFilteredArticleRepository filteredArticleRepository;
+    private FilteredArticleService filteredArticleService;
 
     @Before
     public void setUp() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(new ArticleController(filteredArticleRepository, articleRepository)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new ArticleController(filteredArticleService, rawArticleService)).build();
     }
 
     @Test

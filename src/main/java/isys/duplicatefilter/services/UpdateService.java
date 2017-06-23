@@ -4,6 +4,7 @@ import isys.duplicatefilter.*;
 import isys.duplicatefilter.dto.Article;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -18,9 +19,9 @@ public class UpdateService {
     private final static double SIMILARITY_THRESHOLD = 1.0;
 
     private final DataClient client;
-    private final ArticleService service;
+    private final RawArticleService rawArticleService;
 
-
+    @Scheduled(fixedDelay = 1000 * 60 * 60)
     public void updateArticles() {
         log.info("Fetching articles...");
 
@@ -34,15 +35,16 @@ public class UpdateService {
                 })
                 .mapToObj(client::getPage)
                 .flatMap(List::stream)
-                .forEach(service::save);
+                .forEach(rawArticleService::save);
 
         log.info("Articles fetched and saved.");
+        filter();
     }
 
-    //@Scheduled(fixedDelay = 1000 * 60 * 60)
+
     private void filter() {
         log.info("Filtering.");
-        List<Article> allArticles = service.findAll();
+        List<Article> allArticles = rawArticleService.findAll();
 
         HashMap<String, Article> articleMapComplete = new HashMap<>();
         HashMap<String, List<String>> articleMap = new HashMap<>();
@@ -116,6 +118,5 @@ public class UpdateService {
 
         log.info(MessageFormat.format("Found {0} duplicates in {1} comparisons.", duplicates, compares));
     }
-
 
 }

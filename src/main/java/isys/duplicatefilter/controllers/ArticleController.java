@@ -2,13 +2,13 @@ package isys.duplicatefilter.controllers;
 
 import isys.duplicatefilter.dto.Article;
 import isys.duplicatefilter.exceptions.BadRequestException;
-import isys.duplicatefilter.repositories.IArticleRepository;
-import isys.duplicatefilter.repositories.IFilteredArticleRepository;
+import isys.duplicatefilter.services.ArticleService;
+import isys.duplicatefilter.services.FilteredArticleService;
+import isys.duplicatefilter.services.RawArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,15 +27,14 @@ import static com.google.common.collect.Lists.newArrayList;
 @RequiredArgsConstructor
 public class ArticleController {
 
-    private final IFilteredArticleRepository filteredRepository;
-    private final IArticleRepository articleRepository;
+    private final FilteredArticleService filteredArticleService;
+    private final RawArticleService rawArticleService;
 
     @GetMapping("/articles")
     public ResponseEntity getArticles(@RequestParam(required = false) Integer page) {
-        return getResponseEntity(page, articleRepository);
+        return getResponseEntity(page, rawArticleService);
     }
 
-    //TODO: redirect for "/duplicates"
     @GetMapping("/duplicates")
     public ModelAndView getDuplicates() {
         return new ModelAndView("redirect:/articles?page=1");
@@ -43,16 +42,16 @@ public class ArticleController {
 
     @GetMapping(path = "/filteredArticle")
     public ResponseEntity getFilteredArticles(@RequestParam Integer page) throws IOException, URISyntaxException {
-        return getResponseEntity(page, filteredRepository);
+        return getResponseEntity(page, filteredArticleService);
     }
 
-    private ResponseEntity getResponseEntity(@RequestParam Integer page, MongoRepository<? extends Article, String> repository) {
+    private ResponseEntity getResponseEntity(@RequestParam Integer page, ArticleService<?> service) {
         return Optional.ofNullable(page)
                 .map(pageNumber -> {
-                    Page<? extends Article> all = getPage(pageNumber, repository);
+                    Page<? extends Article> all = getPage(pageNumber, service);
                     return new ResponseEntity<>(newArrayList(all), HttpStatus.OK);
                 }).orElseThrow(() -> {
-                    Page<? extends Article> defaultPage = getPage(1, repository);
+                    Page<? extends Article> defaultPage = getPage(1, service);
                     String message = MessageFormat.format(
                             "There are {0} pages, choose one. {1}",
                             defaultPage.getTotalPages(),
@@ -63,7 +62,7 @@ public class ArticleController {
     }
 
 
-    private Page<? extends Article> getPage(Integer pageNumber, MongoRepository<? extends Article, String> repository) {
+    private Page<? extends Article> getPage(Integer pageNumber, ArticleService repository) {
         Pageable pageable = new PageRequest(pageNumber, 100);
         return repository.findAll(pageable);
     }

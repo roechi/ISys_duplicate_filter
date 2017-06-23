@@ -15,10 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DuplicateFilterApp.class, WebConfiguration.class})
-public class ArticleServiceIT {
+public class RawArticleServiceIT {
 
     @Autowired
-    private ArticleService articleService;
+    private RawArticleService articleService;
 
     @Test
     public void testFetchArticle() {
