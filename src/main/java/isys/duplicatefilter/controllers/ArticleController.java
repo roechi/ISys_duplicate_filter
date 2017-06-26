@@ -40,8 +40,8 @@ public class ArticleController {
         return new ModelAndView("redirect:/articles?page=1");
     }
 
-    @GetMapping(path = "/filteredArticle")
-    public ResponseEntity getFilteredArticles(@RequestParam Integer page) throws IOException, URISyntaxException {
+    @GetMapping(path = "/filteredArticles")
+    public ResponseEntity getFilteredArticles(@RequestParam(required = false) Integer page) throws IOException, URISyntaxException {
         return getResponseEntity(page, filteredArticleService);
     }
 
@@ -55,7 +55,7 @@ public class ArticleController {
                     String message = MessageFormat.format(
                             "There are {0} pages, choose one. {1}",
                             defaultPage.getTotalPages(),
-                            "Example: GET /articles?page=3"
+                            "Example: GET /articles?page=3 or GET /filteredArticles?page=3"
                     );
                     return new BadRequestException(message);
                 });
