@@ -18,7 +18,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {DuplicateFilterApp.class, WebConfiguration.class})
+@SpringBootTest(classes = {DuplicateFilterApp.class, WebConfiguration.class},
+        properties = "scheduling.enabled=false")
 @RunWith(SpringRunner.class)
 public class WebConfigurationIT {
 
@@ -44,7 +45,7 @@ public class WebConfigurationIT {
 
     @Test
     public void shouldEncodeWithUTF8() throws Exception {
-        mockMvc.perform(get("/articles?page=1").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/articles/pages").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().encoding("UTF-8"));
     }

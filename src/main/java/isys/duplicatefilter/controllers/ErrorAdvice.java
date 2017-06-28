@@ -14,4 +14,9 @@ public class ErrorAdvice {
     public ResponseEntity handleBadRequest(BadRequestException e) {
         return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+        return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 }
