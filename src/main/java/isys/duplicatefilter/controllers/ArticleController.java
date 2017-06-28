@@ -50,7 +50,7 @@ public class ArticleController {
 
     @GetMapping("/duplicates")
     public ModelAndView getDuplicates() {
-        return new ModelAndView("redirect:/articles?page=1");
+        return new ModelAndView("redirect:/filteredArticles/page/<pageNumber>");
     }
 
     @GetMapping(path = "/filteredArticles/page/{pageNumber}")
