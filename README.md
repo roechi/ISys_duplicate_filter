@@ -33,6 +33,8 @@ Transfer-Encoding: chunked
 }
 ```
 
+The first page is _always_ 0.
+
 ## Querying for specific pages
 You can query the API via HTTP like this:
 ```http
