@@ -29,7 +29,7 @@ public class ArticleController {
     public ResponseEntity getWithoutPageNumber() {
         return new ResponseEntity<>(
                 new ErrorMessage("Missing page number. " +
-                        "The number of pages can be found at GET /articles/pages or /filtered/articles/pages. " +
+                        "The number of pages can be found at GET /articles/pages or /filteredArticles/pages. " +
                         "The first page is 0."),
                 HttpStatus.BAD_REQUEST);
     }
@@ -38,7 +38,7 @@ public class ArticleController {
     public ResponseEntity getFilteredWithoutPageNumber() {
         return new ResponseEntity<>(
                 new ErrorMessage("Missing page number. " +
-                        "The number of pages can be found at GET /articles/pages or /filtered/articles/pages. " +
+                        "The number of pages can be found at GET /articles/pages or /filteredArticles/pages. " +
                         "The first page is 0."),
                 HttpStatus.BAD_REQUEST);
     }
