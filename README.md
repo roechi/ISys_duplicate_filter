@@ -2,20 +2,50 @@
 [![Build Status](https://travis-ci.org/roechi/ISys_duplicate_filter.svg?branch=master)](https://travis-ci.org/roechi/ISys_duplicate_filter)
 
 # Usage
+## Querying for amount of pages
+First, you will want to retrieve the total number of pages for our document collections via:
 
+```http
+GET /articles/pages
+```
+or
+```http
+GET /filteredArticles/pages
+```
+A response will look like this:
+```http
+GET /filteredArticles/pages HTTP/1.1
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Host: cmts4.f4.htw-berlin.de:8080
+User-Agent: HTTPie/0.9.8
+
+
+
+HTTP/1.1 200
+Content-Type: application/json;charset=UTF-8
+Date: Wed, 28 Jun 2017 20:38:23 GMT
+Transfer-Encoding: chunked
+
+{
+    "pages": 239
+}
+```
+
+## Querying for specific pages
 You can query the API via HTTP like this:
 ```http
-GET /articles
+GET /articles/page/<pageNumber>
 ```
 or this:
 ```http
-GET /filteredArticles
+GET /filteredArticles/page/<pageNumber>
 ```
-
-Both resources will give you an explanation for further usage of the paginated API. That means you just have to query for certain pages of the document corpus by using a query parameter (who would have thought!). Obviously we don't want to pump out several thousand json objects at once. So for example, the pagination can be used like this:
+to retrieve a specific page of articles or filtered articles respectively. A response will look like this:
 
 ```http
-GET /filteredArticles?page=100 HTTP/1.1
+GET /filteredArticles/page/100 HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate
 Connection: keep-alive
