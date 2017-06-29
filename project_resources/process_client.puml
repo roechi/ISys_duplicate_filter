@@ -1,0 +1,38 @@
+@startuml
+
+skinparam shadowing false
+skinparam backgroundColor #2e3037
+skinparam arrowColor #39c0ba
+skinparam defaultFontColor #39c0ba
+
+skinparam activity {
+  StartColor #39c0ba
+  EndColor #39c0ba
+  BarColor #39c0ba
+  BackgroundColor #2e3037
+  BorderColor #877dcd
+  FontName Courier
+  DiamondBackgroundColor #2e3037
+  DiamondBorderColor #877dcd
+}
+
+skinparam note {
+  BackgroundColor #2e3037
+  BorderColor #877dcd
+  FontName Courier
+}
+
+
+start
+repeat
+  :fetch Articles from Remote (REST);
+  note left
+    can handle
+    transport layer
+    issues
+  end note
+  :store Articles in DB;
+  :filter;
+repeat while (scheduler)
+stop
+@enduml
