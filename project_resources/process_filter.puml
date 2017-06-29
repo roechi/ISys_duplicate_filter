@@ -1,5 +1,7 @@
 @startuml
 
+scale 3
+
 skinparam shadowing false
 skinparam backgroundColor #2e3037
 skinparam arrowColor #39c0ba
@@ -30,7 +32,7 @@ start
     if (Similarity of two Articles > Threshold) then (yes)
       :mark as duplicate;
     else
-      ->no; 
+      ->no;
     endif
 	:store filtered Articles;
 stop

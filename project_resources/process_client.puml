@@ -1,4 +1,5 @@
 @startuml
+scale 3
 
 skinparam shadowing false
 skinparam backgroundColor #2e3037
