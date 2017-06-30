@@ -23,6 +23,23 @@ public class UpdateService {
     private final RawArticleService rawArticleService;
     private final FilteredArticleService filteredArticleService;
 
+    private static FilteredArticle toFilteredArticle(Article article) {
+        return (FilteredArticle) new FilteredArticle()
+                .setAddress(article.getAddress())
+                .setCategory(article.getCategory())
+                .setContent(article.getContent())
+                .setDate(article.getDate())
+                .setDistrict(article.getDistrict())
+                .setId(article.getId())
+                .setJournal(article.getJournal())
+                .setMessageTimestamp(article.getMessageTimestamp())
+                .setPrecinct(article.getPrecinct())
+                .setReferenceReports(article.getReferenceReports())
+                .setReliefForces(article.getReliefForces())
+                .setTitle(article.getTitle())
+                .setUrl(article.getUrl());
+    }
+
     @Scheduled(fixedDelay = 1000 * 60 * 60)
     public void updateArticles() {
         log.info("Fetching articles...");
@@ -43,7 +60,7 @@ public class UpdateService {
         filter();
     }
 
-    private void filter() {
+    protected void filter() {
         log.info("Filtering.");
         List<Article> allArticles = rawArticleService.findAll();
 
@@ -60,7 +77,7 @@ public class UpdateService {
                         }
                 );
 
-        log.info("Loaded articles.");
+        log.info("Loaded and shingled all articles.");
         MinHash minHash = new MinHash(198);
 
         LinkedHashMap<String, List<Integer>> minHashMap = new LinkedHashMap<>();
@@ -124,23 +141,6 @@ public class UpdateService {
         log.info("Saving filtered articles...");
         articleMapComplete.values().forEach(filteredArticleService::save);
         log.info("Saved filtered articles.");
-    }
-
-    private static FilteredArticle toFilteredArticle(Article article) {
-        return (FilteredArticle) new FilteredArticle()
-                .setAddress(article.getAddress())
-                .setCategory(article.getCategory())
-                .setContent(article.getContent())
-                .setDate(article.getDate())
-                .setDistrict(article.getDistrict())
-                .setId(article.getId())
-                .setJournal(article.getJournal())
-                .setMessageTimestamp(article.getMessageTimestamp())
-                .setPrecinct(article.getPrecinct())
-                .setReferenceReports(article.getReferenceReports())
-                .setReliefForces(article.getReliefForces())
-                .setTitle(article.getTitle())
-                .setUrl(article.getUrl());
     }
 
 }
